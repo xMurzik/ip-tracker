@@ -1,0 +1,39 @@
+$border-color: rgba(128, 128, 128, 0.187);
+
+.mainCont {
+  position: relative;
+  bottom: -15%;
+  background-color: white;
+  width: 70% !important;
+  border-radius: 20px;
+  box-shadow: 1px 1px 10px rgba(128, 128, 128, 0.386);
+  min-width: 350px;
+
+  @media screen and (max-width: 767px) {
+    bottom: 0%;
+  }
+}
+
+.oneElemList {
+  border-right: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px;
+
+  @media screen and (max-width: 767px) {
+    border-right: none;
+    border-bottom: 1px solid $border-color;
+  }
+}
+
+.oneElemListLast {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding-top: 10px;
+  @media screen and (max-width: 767px) {
+  }
+}
