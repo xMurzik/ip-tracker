@@ -14,7 +14,7 @@ const App: React.FC = () => {
   const [valueInput, setValueInput] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState<IResponsData | null>(null);
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<string>('Type some ip or domain');
 
   const fetchData = async (inputValue: string = '') => {
     let valueToFetch: string = '';
@@ -35,7 +35,7 @@ const App: React.FC = () => {
       setValueInput('');
       setData(ans);
     } catch {
-      setError(true);
+      setError('Some error pls try again');
     }
   };
 
@@ -57,19 +57,6 @@ const App: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <button
-        onClick={() => {
-          setError(false);
-          fetchData();
-        }}
-      >
-        Try again?
-      </button>
-    );
-  }
-
   return (
     <>
       <div className={styles.upperImage}>
@@ -81,18 +68,19 @@ const App: React.FC = () => {
             size="lg"
             type="text"
             id="ipForInput"
-            placeholder="Type some ip"
+            placeholder={error}
             className={styles.ipInput}
             value={valueInput}
             onChange={(evt) => setValueInput(evt.target.value)}
           />
           <InputGroup.Text
             onClick={() => {
-              if (
-                !REG_IP.test(valueInput) === false &&
-                !REG_DOMAIN.test(valueInput) === false
-              ) {
-                console.log('asd');
+              if (!REG_IP.test(valueInput) && !REG_DOMAIN.test(valueInput)) {
+                setError('Invalid input');
+                setValueInput('');
+                setTimeout(() => {
+                  setError('Type some ip or domain');
+                }, 3000);
                 return;
               }
               fetchData(valueInput);
@@ -103,6 +91,7 @@ const App: React.FC = () => {
             <Icon.CaretRightFill size={30} color="white" />
           </InputGroup.Text>
         </InputGroup>
+
         <LocationInfoTab {...data} />
       </div>
 
