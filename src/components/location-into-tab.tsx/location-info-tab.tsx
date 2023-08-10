@@ -36,7 +36,7 @@ const LocationInfoTab: React.FC<ILocationInfoTabProps> = (props) => {
                 id !== 3 ? styles.oneElemList : styles.oneElemListLast
               }`}
             >
-              <h4 style={{ whiteSpace: 'nowrap' }}>{el}</h4>
+              <h6 style={{ whiteSpace: 'nowrap' }}>{el}</h6>
               <p className={styles.textIntoElem}>{value}</p>
             </Col>
           );
