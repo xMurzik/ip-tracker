@@ -1,11 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Rubik:ital,wght@1,300&display=swap');
 
+.mainWrapper {
+  height: 100vh;
+}
+
 body {
   font-family: 'Rubik' !important;
 }
 
+.loadingStage {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .upperImage {
   height: 300px;
+  z-index: 1;
   background-image: url('../images/pattern-bg-desktop.png');
   background-size: cover;
   display: flex;
@@ -14,10 +26,8 @@ body {
   padding-top: 40px;
   align-items: center;
   gap: 20px;
-}
-
-.mainWrapper {
-  height: 100vh;
+  position: absolute;
+  width: 100%;
 }
 
 .containerForInputs {
