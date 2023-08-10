@@ -10,7 +10,7 @@ const MapComponent = ({ lat, lng }: IMyMapComponent) => {
   const map = useMap();
 
   useEffect(() => {
-    map.setView([lat, lng], 13);
+    map.setView([lat + 0.025, lng], 13);
   }, [map, lat, lng]);
   return null;
 };
