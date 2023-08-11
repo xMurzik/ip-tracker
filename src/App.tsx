@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
+import { useQuery } from 'react-query';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import LocationInfoTab from './components/location-into-tab.tsx/location-info-tab';
@@ -7,55 +8,33 @@ import { REG_DOMAIN, REG_IP } from './const';
 import { IResponsData } from './const';
 import { API_CURRENT_POSITION } from './const';
 import Map from './components/map/map';
-import { RotatingLines } from 'react-loader-spinner';
 import styles from './App.module.scss';
+
+const fetchData = async (inputValue: string = '') => {
+  let valueToFetch: string = '';
+
+  if (REG_IP.test(inputValue)) {
+    valueToFetch = `&ipAddress=${inputValue}`;
+  }
+
+  if (REG_DOMAIN.test(inputValue)) {
+    valueToFetch = `&domain=${inputValue}`;
+  }
+
+  const res = await fetch(`${API_CURRENT_POSITION}${valueToFetch}`);
+
+  const ans: IResponsData = await res.json();
+  return ans;
+};
 
 const App: React.FC = () => {
   const [valueInput, setValueInput] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState<IResponsData | null>(null);
-  const [error, setError] = useState<string>('Type some ip or domain');
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const fetchData = async (inputValue: string = '') => {
-    let valueToFetch: string = '';
-
-    if (REG_IP.test(inputValue)) {
-      valueToFetch = `&ipAddress=${inputValue}`;
-    }
-
-    if (REG_DOMAIN.test(inputValue)) {
-      valueToFetch = `&domain=${inputValue}`;
-    }
-
-    try {
-      const res = await fetch(`${API_CURRENT_POSITION}${valueToFetch}`);
-
-      const ans: IResponsData = await res.json();
-      setIsLoading(false);
-      setValueInput('');
-      setData(ans);
-    } catch {
-      setError('Some error pls try again');
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  if (isLoading || data === null) {
-    return (
-      <div className={styles.loadingStage}>
-        <RotatingLines
-          strokeColor="lightblue"
-          strokeWidth="5"
-          animationDuration="0.75"
-          width="150"
-          visible={true}
-        />
-      </div>
-    );
-  }
+  const { data, isSuccess } = useQuery({
+    queryFn: () => fetchData(valueInput),
+    queryKey: ['apiData', valueInput],
+  });
 
   return (
     <>
@@ -68,22 +47,16 @@ const App: React.FC = () => {
             size="lg"
             type="text"
             id="ipForInput"
-            placeholder={error}
+            placeholder="Type some ip or domain"
             className={styles.ipInput}
-            value={valueInput}
-            onChange={(evt) => setValueInput(evt.target.value)}
+            ref={inputRef}
           />
           <InputGroup.Text
             onClick={() => {
-              if (!REG_IP.test(valueInput) && !REG_DOMAIN.test(valueInput)) {
-                setError('Invalid input');
-                setValueInput('');
-                setTimeout(() => {
-                  setError('Type some ip or domain');
-                }, 3000);
-                return;
+              setValueInput(inputRef.current?.value as string);
+              if (inputRef.current) {
+                inputRef.current.value = '';
               }
-              fetchData(valueInput);
             }}
             className={styles.inputGroupText}
             id="basic-addon2"
@@ -92,11 +65,11 @@ const App: React.FC = () => {
           </InputGroup.Text>
         </InputGroup>
 
-        <LocationInfoTab {...data} />
+        {isSuccess && <LocationInfoTab {...data} />}
       </div>
 
       <div className={styles.mainWrapper}>
-        <Map lat={data.location.lat} lng={data.location.lng} />
+        {isSuccess && <Map lat={data.location.lat} lng={data.location.lng} />}
       </div>
     </>
   );
