@@ -6,6 +6,7 @@ import LocationInfoTab from './components/location-into-tab.tsx/location-info-ta
 import * as Icon from 'react-bootstrap-icons';
 import { REG_DOMAIN, REG_IP } from './const';
 import { IResponsData } from './const';
+import { RotatingLines } from 'react-loader-spinner';
 import { API_CURRENT_POSITION } from './const';
 import Map from './components/map/map';
 import styles from './App.module.scss';
@@ -23,18 +24,32 @@ const fetchData = async (inputValue: string = '') => {
 
   const res = await fetch(`${API_CURRENT_POSITION}${valueToFetch}`);
 
-  const ans: IResponsData = await res.json();
-  return ans;
+  return (await res.json()) as IResponsData;
 };
 
 const App: React.FC = () => {
   const [valueInput, setValueInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { data, isSuccess } = useQuery({
+  const { data, isSuccess, isLoading } = useQuery({
     queryFn: () => fetchData(valueInput),
     queryKey: ['apiData', valueInput],
+    keepPreviousData: true,
   });
+
+  if (isLoading) {
+    return (
+      <div className={styles.loadingStage}>
+        <RotatingLines
+          strokeColor="lightblue"
+          strokeWidth="3"
+          animationDuration="0.75"
+          width="150"
+          visible
+        />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -50,6 +65,14 @@ const App: React.FC = () => {
             placeholder="Type some ip or domain"
             className={styles.ipInput}
             ref={inputRef}
+            onKeyDown={(evt: React.KeyboardEvent<HTMLSpanElement>) => {
+              if (evt.key === 'Enter') {
+                setValueInput(inputRef.current?.value as string);
+                if (inputRef.current) {
+                  inputRef.current.value = '';
+                }
+              }
+            }}
           />
           <InputGroup.Text
             onClick={() => {
