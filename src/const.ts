@@ -1,4 +1,4 @@
-export const API_KEY = 'at_Q4En18bOTtlmFVpsz6ggYbnAbZRBI';
+export const API_KEY = 'at_SFJD6U86PJmu1e3pXvn1DOGMe1rcg';
 
 export const API_CURRENT_POSITION = `https://geo.ipify.org/api/v2/country,city?apiKey=${API_KEY}`;
 
