@@ -11,31 +11,36 @@ import { API_CURRENT_POSITION } from './const';
 import Map from './components/map/map';
 import styles from './App.module.scss';
 
-const fetchData = async (inputValue: string = '') => {
-  let valueToFetch: string = '';
-
-  if (REG_IP.test(inputValue)) {
-    valueToFetch = `&ipAddress=${inputValue}`;
-  }
-
-  if (REG_DOMAIN.test(inputValue)) {
-    valueToFetch = `&domain=${inputValue}`;
-  }
-
-  const res = await fetch(`${API_CURRENT_POSITION}${valueToFetch}`);
-
-  return (await res.json()) as IResponsData;
-};
-
 const App: React.FC = () => {
   const [valueInput, setValueInput] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState<boolean>(false);
 
-  const { data, isSuccess, isLoading } = useQuery({
+  const { data, isSuccess, isLoading, refetch } = useQuery({
     queryFn: () => fetchData(valueInput),
     queryKey: ['apiData', valueInput],
     keepPreviousData: true,
   });
+
+  const fetchData = async (inputValue: string = '') => {
+    let valueToFetch: string = '';
+
+    if (REG_IP.test(inputValue)) {
+      valueToFetch = `&ipAddress=${inputValue}`;
+    }
+
+    if (REG_DOMAIN.test(inputValue)) {
+      valueToFetch = `&domain=${inputValue}`;
+    }
+
+    const res = await fetch(`${API_CURRENT_POSITION}${valueToFetch}`);
+
+    if (!res.ok) {
+      setError(true);
+    }
+
+    return (await res.json()) as IResponsData;
+  };
 
   if (isLoading) {
     return (
@@ -47,6 +52,22 @@ const App: React.FC = () => {
           width="150"
           visible
         />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.loadingStage}>
+        <h1>Error to fetch some data for map</h1>
+        <button
+          onClick={() => {
+            refetch();
+          }}
+          className={styles.tryAgainButton}
+        >
+          Try again?
+        </button>
       </div>
     );
   }

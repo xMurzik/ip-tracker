@@ -12,7 +12,22 @@ body {
   height: 100vh;
   display: flex;
   justify-content: center;
+  flex-direction: column;
   align-items: center;
+}
+
+.tryAgainButton {
+  border: none;
+  background-color: rgb(201, 194, 181);
+  font-size: 1.5rem;
+  border-radius: 15px;
+  padding: 5px 10px;
+  transition: all 0.5s linear;
+}
+
+.tryAgainButton:hover {
+  background-color: rgb(176, 163, 137);
+  scale: 1.1;
 }
 
 .upperImage {
